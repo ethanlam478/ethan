@@ -1,352 +1,46 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-HK">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>貪食蛇遊戲 PRD + 遊戲</title>
+    <title>我的遊戲館</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
         body {
-            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        header {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #4CAF50;
+            padding: 40px;
         }
-        h1 {
-            color: #4CAF50;
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-        }
-        h2 {
-            color: #333;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-        h3 {
-            color: #555;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            color: #777;
-            font-size: 1.2rem;
-        }
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        @media (max-width: 900px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-        }
-        .prd-section, .game-section {
-            background-color: white;
-            padding: 25px;
+        h1 { margin-bottom: 30px; }
+        .games { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .game-card {
+            background: #2d2d44;
+            padding: 25px 35px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            border: 1px solid #eee;
+            text-decoration: none;
+            color: white;
+            transition: 0.3s;
         }
-        ul, ol {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-        li {
-            margin-bottom: 8px;
-        }
-        code {
-            background-color: #f0f0f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-        }
-        .mark {
-            background-color: #fffacd;
-            padding: 2px 4px;
-            border-radius: 3px;
-        }
-        .game-container {
-            margin-top: 20px;
-            border: 2px solid #4CAF50;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .instructions {
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            color: #777;
-            font-size: 0.9rem;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-        }
+        .game-card:hover { background: #3d3d5c; transform: scale(1.05); }
+        .icon { font-size: 2em; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>貪食蛇遊戲 PRD + 遊戲</h1>
-            <p class="subtitle">產品需求文檔與可玩遊戲整合頁面</p>
-        </header>
-
-        <div class="content">
-            <!-- 左側：PRD -->
-            <section class="prd-section">
-                <h2>貪食蛇遊戲 PRD</h2>
-                
-                <h3>一、專案概述</h3>
-                <ul>
-                    <li>專案名稱：貪食蛇遊戲 PRD</li>
-                    <li>一句話描述：一個適合全年齡的貪食蛇遊戲</li>
-                    <li>版本：2.0</li>
-                    <li>新增功能：多人模式（規劃中）</li>
-                </ul>
-
-                <h3>二、問題與目標</h3>
-                <p><strong>問題陳述：</strong>遊戲太難，不適合年齡小的用戶遊玩。</p>
-                <p><strong>目標：</strong>降低難度，讓年齡小的用戶也能輕鬆遊玩。</p>
-
-                <h3>三、目標用戶</h3>
-                <ul>
-                    <li>年齡：6-12歲兒童</li>
-                    <li>技術程度：初學者，簡單操作</li>
-                    <li>使用場景：家庭、學校、休閒時間</li>
-                </ul>
-
-                <h3>四、用戶故事</h3>
-                <ul>
-                    <li>作為10歲的用戶，我想遊玩貪食蛇遊戲，以便解悶。</li>
-                    <li>作為8歲的用戶，我想和朋友一起玩貪食蛇，以便共同娛樂。</li>
-                </ul>
-
-                <h3>五、功能需求與驗收標準</h3>
-                
-                <h4>功能1：貪食蛇基礎遊戲</h4>
-                <ul>
-                    <li>蛇身：由多個連續方塊組成，頭部用不同顏色區分</li>
-                    <li>食物：隨機出現在遊戲區域內的單個方塊</li>
-                    <li>遊戲區域：固定大小的矩形網格（20×20）</li>
-                    <li>分數系統：每吃一個食物得10分，實時顯示</li>
-                    <li>移動控制：通過方向鍵(↑↓←→或WASD)控制蛇的移動方向</li>
-                    <li>死亡條件：蛇頭撞到牆壁或自己的身體</li>
-                    <li>遊戲循環：遊戲結束顯示最終分數，可選擇重新開始</li>
-                </ul>
-
-                <h4>功能2：多人模式（新增）</h4>
-                <p><span class="mark">## 功能名稱：多人</span></p>
-                <p><span class="mark">## 為什麼要加：能夠和朋友玩</span></p>
-                <p><span class="mark">## 具體要求：</span></p>
-                <ol>
-                    <li>支援2-4名玩家同時遊玩</li>
-                    <li>每位玩家控制一條不同顏色的蛇</li>
-                    <li>每位玩家擁有獨立控制鍵（例如：玩家1：WASD，玩家2：方向鍵）</li>
-                    <li>食物數量隨玩家數量增加</li>
-                    <li>勝利條件：最後存活的玩家獲勝</li>
-                    <li>玩家碰撞規則：蛇頭撞到其他蛇的身體則死亡</li>
-                </ol>
-
-                <h4>驗收標準</h4>
-                <ul>
-                    <li>Given 遊戲已啟動，When 玩家按下開始鍵，Then 蛇應開始移動</li>
-                    <li>Given 蛇頭接觸食物，When 遊戲更新，Then 蛇長度增加，分數增加</li>
-                    <li>Given 蛇頭接觸牆壁或自身，When 碰撞發生，Then 遊戲結束</li>
-                    <li>Given 多人模式，When 兩名玩家加入，Then 兩條蛇應出現在場上且可獨立控制</li>
-                </ul>
-
-                <h3>六、技術約束</h3>
-                <ul>
-                    <li>必須遵守簡單：程式碼應簡潔易懂，便於修改</li>
-                    <li>不要做太難：避免複雜演算法，優先考慮可玩性</li>
-                    <li>使用純HTML5/CSS3/JavaScript實現，無需外部庫</li>
-                    <li>響應式設計，支援桌面和移動設備</li>
-                </ul>
-
-                <h3>七、GitHub提交要求</h3>
-                <ol>
-                    <li>更新後的遊戲程式碼push到GitHub repo</li>
-                    <li>啟用GitHub Pages展示遊戲</li>
-                    <li>提交commit截圖</li>
-                </ol>
-            </section>
-
-            <!-- 右側：遊戲 -->
-            <section class="game-section">
-                <h2>貪食蛇遊戲（現有版本）</h2>
-                <p>以下為現有貪食蛇遊戲，已包含基礎功能。</p>
-                
-                <div class="instructions">
-                    <h3>操作說明：</h3>
-                    <ul>
-                        <li>使用鍵盤方向鍵 ↑ ↓ ← → 或 WASD 控制蛇移動</li>
-                        <li>吃到紅色蘋果可增加長度和得分</li>
-                        <li>避免撞到牆壁或自己的身體</li>
-                        <li>點擊下方按鈕控制遊戲</li>
-                    </ul>
-                </div>
-
-                <div class="game-container">
-                    <!-- 以下是現有遊戲代碼 -->
-                    <style>
-                        .game-area {
-                            width: 100%;
-                            max-width: 800px;
-                            margin: 0 auto;
-                        }
-                        .game-board-container {
-                            position: relative;
-                            border-radius: 8px;
-                            overflow: hidden;
-                            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-                        }
-                        #gameCanvas {
-                            background-color: #000;
-                            display: block;
-                            width: 100%;
-                            height: auto;
-                        }
-                        .controls-panel {
-                            background-color: rgba(30, 30, 30, 0.95);
-                            color: white;
-                            padding: 20px;
-                            border-radius: 0 0 8px 8px;
-                        }
-                        .score-container {
-                            display: flex;
-                            justify-content: space-between;
-                            margin-bottom: 20px;
-                        }
-                        .score-box {
-                            text-align: center;
-                        }
-                        .score-label {
-                            font-size: 1rem;
-                            color: #aaa;
-                            margin-bottom: 5px;
-                        }
-                        .score-value {
-                            font-size: 2rem;
-                            font-weight: bold;
-                        }
-                        #currentScore {
-                            color: #4CAF50;
-                        }
-                        #highScore {
-                            color: #FF9800;
-                        }
-                        .buttons-container {
-                            display: grid;
-                            grid-template-columns: repeat(2, 1fr);
-                            gap: 10px;
-                            margin-bottom: 15px;
-                        }
-                        button {
-                            background-color: #333;
-                            color: white;
-                            border: none;
-                            padding: 12px;
-                            border-radius: 6px;
-                            font-size: 1rem;
-                            cursor: pointer;
-                            transition: background-color 0.2s;
-                        }
-                        button:hover {
-                            background-color: #444;
-                        }
-                        #startBtn { background-color: #4CAF50; }
-                        #startBtn:hover { background-color: #45a049; }
-                        #pauseBtn { background-color: #2196F3; }
-                        #pauseBtn:hover { background-color: #0b7dda; }
-                        #restartBtn { background-color: #f44336; }
-                        #restartBtn:hover { background-color: #da190b; }
-                        #changeSpeedBtn { background-color: #9C27B0; }
-                        #changeSpeedBtn:hover { background-color: #7b1fa2; }
-                        #statusMessage {
-                            text-align: center;
-                            padding: 10px;
-                            color: #FFC107;
-                            font-weight: 500;
-                        }
-                    </style>
-
-                    <div class="game-area">
-                        <div class="game-board-container">
-                            <canvas id="gameCanvas" width="800" height="600"></canvas>
-                        </div>
-                        <div class="controls-panel">
-                            <div class="score-container">
-                                <div class="score-box">
-                                    <div class="score-label">當前得分</div>
-                                    <div id="currentScore" class="score-value">0</div>
-                                </div>
-                                <div class="score-box">
-                                    <div class="score-label">最高分</div>
-                                    <div id="highScore" class="score-value">0</div>
-                                </div>
-                            </div>
-                            <div class="buttons-container">
-                                <button id="startBtn">開始遊戲</button>
-                                <button id="pauseBtn">暫停遊戲</button>
-                                <button id="restartBtn">重新開始</button>
-                                <button id="changeSpeedBtn">切換速度</button>
-                            </div>
-                            <div id="statusMessage">點擊"開始遊戲"按鈕開始遊戲</div>
-                        </div>
-                    </div>
-
-                    <script>
-                        // 遊戲代碼與原檔案相同，為節省空間已壓縮
-                        const canvas=document.getElementById('gameCanvas');const ctx=canvas.getContext('2d');let snake=[],food={},direction='right',nextDirection='right',gameSpeed=150,gameLoop,gameRunning=false,gamePaused=false,score=0,highScore=localStorage.getItem('snakeHighScore')||0,speedLevel=1;const currentScoreElement=document.getElementById('currentScore'),highScoreElement=document.getElementById('highScore'),statusMessageElement=document.getElementById('statusMessage'),startBtn=document.getElementById('startBtn'),pauseBtn=document.getElementById('pauseBtn'),restartBtn=document.getElementById('restartBtn'),changeSpeedBtn=document.getElementById('changeSpeedBtn'),gridSize=20,gridWidth=canvas.width/gridSize,gridHeight=canvas.height/gridSize;highScoreElement.textContent=highScore;function initGame(){snake=[{x:Math.floor(gridWidth/2),y:Math.floor(gridHeight/2)},{x:Math.floor(gridWidth/2)-1,y:Math.floor(gridHeight/2)},{x:Math.floor(gridWidth/2)-2,y:Math.floor(gridHeight/2)}];generateFood();direction='right';nextDirection='right';score=0;currentScoreElement.textContent=score;speedLevel=1;gameSpeed=150;drawGame();statusMessageElement.textContent="遊戲已初始化，點擊開始按鈕開始遊戲";statusMessageElement.style.color="#FFC107";}function generateFood(){let validPosition=false;while(!validPosition){food={x:Math.floor(Math.random()*gridWidth),y:Math.floor(Math.random()*gridHeight)};validPosition=true;for(let segment of snake){if(segment.x===food.x&&segment.y===food.y){validPosition=false;break;}}}}function drawGame(){ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.strokeStyle='#111';ctx.lineWidth=0.5;for(let x=0;x<canvas.width;x+=gridSize){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}for(let y=0;y<canvas.height;y+=gridSize){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}snake.forEach((segment,index)=>{if(index===0){ctx.fillStyle='#4CAF50';}else{const colorValue=Math.max(100,255-index*8);ctx.fillStyle=`rgb(76,${colorValue},80)`;}const x=segment.x*gridSize;const y=segment.y*gridSize;ctx.fillRect(x,y,gridSize,gridSize);if(index===0){ctx.fillStyle='#fff';let eye1X,eye1Y,eye2X,eye2Y;if(direction==='right'){eye1X=x+gridSize*0.7;eye1Y=y+gridSize*0.3;eye2X=x+gridSize*0.7;eye2Y=y+gridSize*0.7;}else if(direction==='left'){eye1X=x+gridSize*0.3;eye1Y=y+gridSize*0.3;eye2X=x+gridSize*0.3;eye2Y=y+gridSize*0.7;}else if(direction==='up'){eye1X=x+gridSize*0.3;eye1Y=y+gridSize*0.3;eye2X=x+gridSize*0.7;eye2Y=y+gridSize*0.3;}else if(direction==='down'){eye1X=x+gridSize*0.3;eye1Y=y+gridSize*0.7;eye2X=x+gridSize*0.7;eye2Y=y+gridSize*0.7;}ctx.beginPath();ctx.arc(eye1X,eye1Y,gridSize*0.15,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(eye2X,eye2Y,gridSize*0.15,0,Math.PI*2);ctx.fill();}});const foodX=food.x*gridSize;const foodY=food.y*gridSize;ctx.fillStyle='#FF5252';ctx.beginPath();ctx.arc(foodX+gridSize/2,foodY+gridSize/2,gridSize/2-2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#FF8A80';ctx.beginPath();ctx.arc(foodX+gridSize/2-3,foodY+gridSize/2-3,gridSize/6,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8D6E63';ctx.fillRect(foodX+gridSize/2-1,foodY+gridSize/2-gridSize/2,2,gridSize/4);ctx.fillStyle='#7CB342';ctx.beginPath();ctx.ellipse(foodX+gridSize/2+5,foodY+gridSize/2-gridSize/2+2,4,3,Math.PI/4,0,Math.PI*2);ctx.fill();}function updateGame(){direction=nextDirection;const head={x:snake[0].x,y:snake[0].y};switch(direction){case'up':head.y-=1;break;case'down':head.y+=1;break;case'left':head.x-=1;break;case'right':head.x+=1;break;}if(head.x<0||head.x>=gridWidth||head.y<0||head.y>=gridHeight){gameOver();return;}for(let segment of snake){if(head.x===segment.x&&head.y===segment.y){gameOver();return;}}snake.unshift(head);if(head.x===food.x&&head.y===food.y){score+=10;currentScoreElement.textContent=score;if(score>highScore){highScore=score;highScoreElement.textContent=highScore;localStorage.setItem('snakeHighScore',highScore);}if(score>0&&score%50===0){speedLevel++;if(gameSpeed>50){gameSpeed-=10;}statusMessageElement.textContent=`速度提升！當前速度等級:${speedLevel}`;statusMessageElement.style.color="#4CAF50";if(gameRunning&&!gamePaused){clearInterval(gameLoop);gameLoop=setInterval(gameStep,gameSpeed);}}generateFood();statusMessageElement.textContent=`吃到蘋果！得分:${score}，長度:${snake.length}`;statusMessageElement.style.color="#FFC107";}else{snake.pop();}drawGame();}function gameStep(){if(gameRunning&&!gamePaused){updateGame();}}function startGame(){if(!gameRunning){gameRunning=true;gamePaused=false;gameLoop=setInterval(gameStep,gameSpeed);statusMessageElement.textContent="遊戲進行中！使用方向鍵控制蛇移動";statusMessageElement.style.color="#4CAF50";startBtn.textContent="重新開始";}else if(gamePaused){gamePaused=false;gameLoop=setInterval(gameStep,gameSpeed);statusMessageElement.textContent="遊戲繼續！";statusMessageElement.style.color="#4CAF50";}}function pauseGame(){if(gameRunning&&!gamePaused){gamePaused=true;clearInterval(gameLoop);statusMessageElement.textContent="遊戲已暫停，點擊繼續按鈕恢復";statusMessageElement.style.color="#2196F3";pauseBtn.textContent="繼續遊戲";}else if(gamePaused){gamePaused=false;gameLoop=setInterval(gameStep,gameSpeed);statusMessageElement.textContent="遊戲繼續！";statusMessageElement.style.color="#4CAF50";pauseBtn.textContent="暫停遊戲";}}function restartGame(){clearInterval(gameLoop);initGame();gameRunning=false;gamePaused=false;statusMessageElement.textContent="遊戲已重置，點擊開始按鈕開始遊戲";statusMessageElement.style.color="#FFC107";startBtn.textContent="開始遊戲";pauseBtn.textContent="暫停遊戲";}function changeSpeed(){if(gameSpeed===150){gameSpeed=100;speedLevel=2;statusMessageElement.textContent="速度:中等";}else if(gameSpeed===100){gameSpeed=70;speedLevel=3;statusMessageElement.textContent="速度:快速";}else{gameSpeed=150;speedLevel=1;statusMessageElement.textContent="速度:慢速";}if(gameRunning&&!gamePaused){clearInterval(gameLoop);gameLoop=setInterval(gameStep,gameSpeed);}statusMessageElement.style.color="#FF9800";}function gameOver(){gameRunning=false;clearInterval(gameLoop);ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#f44336';ctx.font='bold 48px Arial';ctx.textAlign='center';ctx.fillText('遊戲結束!',canvas.width/2,canvas.height/2-50);ctx.fillStyle='#FFC107';ctx.font='bold 36px Arial';ctx.fillText(`最終得分:${score}`,canvas.width/2,canvas.height/2+20);ctx.fillStyle='#4CAF50';ctx.font='24px Arial';ctx.fillText('點擊"重新開始"按鈕再次遊戲',canvas.width/2,canvas.height/2+80);statusMessageElement.textContent=`遊戲結束！最終得分:${score}`;statusMessageElement.style.color="#f44336";}document.addEventListener('keydown',function(event){if([37,38,39,40].includes(event.keyCode)){event.preventDefault();}switch(event.key){case'ArrowUp':case'w':case'W':if(direction!=='down')nextDirection='up';break;case'ArrowDown':case's':case'S':if(direction!=='up')nextDirection='down';break;case'ArrowLeft':case'a':case'A':if(direction!=='right')nextDirection='left';break;case'ArrowRight':case'd':case'D':if(direction!=='left')nextDirection='right';break;case' ':if(gameRunning){pauseGame();}break;}});startBtn.addEventListener('click',startGame);pauseBtn.addEventListener('click',pauseGame);restartBtn.addEventListener('click',restartGame);changeSpeedBtn.addEventListener('click',changeSpeed);initGame();
-                    </script>
-                </div>
-
-                <div style="margin-top: 20px; padding: 15px; background-color: #e8f5e9; border-radius: 8px;">
-                    <h3>下一步：實現多人模式</h3>
-                    <p>根據PRD規劃，需新增以下功能：</p>
-                    <ol>
-                        <li>增加玩家選擇介面（2-4人）</li>
-                        <li>為每位玩家分配不同顏色和按鍵</li>
-                        <li>修改碰撞邏輯，支援玩家間碰撞</li>
-                        <li>增加勝利條件判斷</li>
-                    </ol>
-                    <p><strong>GitHub提交步驟：</strong></p>
-                    <ul>
-                        <li>1. 將此HTML檔案儲存為 <code>作業prd.html</code></li>
-                        <li>2. Push到GitHub repository</li>
-                        <li>3. 啟用GitHub Pages</li>
-                        <li>4. 提交commit截圖</li>
-                    </ul>
-                </div>
-            </section>
-        </div>
-
-        <footer>
-            <p>貪食蛇遊戲 PRD + 遊戲整合頁面 © 2023 | 使用HTML5/CSS3/JavaScript開發 | 包含現有遊戲與PRD規劃</p>
-            <p>GitHub提交要求：1. GitHub Pages連結 2. Commit截圖</p>
-        </footer>
+    <h1>🎮 我的遊戲館</h1>
+    <div class="games">
+        <a href="game1.html" class="game-card">
+            <div class="icon">🎯</div>
+            <div>貪食蛇</div>
+        </a>
+        <a href="game2.html" class="game-card">
+            <div class="icon">✊</div>
+            <div>Flappy Bird</div>
+        </a>
+        <a href="game3.html" class="game-card">
+            <div class="icon">✊</div>
+            <div>Block Blast</div>
+        <!-- 加更多遊戲 -->
     </div>
 </body>
 </html>

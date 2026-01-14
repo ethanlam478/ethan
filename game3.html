@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Blast - 方塊爆破遊戲</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #FF5722, #FFC107, #4CAF50, #2196F3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .game-board {
+            position: relative;
+            width: 600px;
+            height: 700px;
+            background-color: #0d1525;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #2a3b5c;
+        }
+        
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .game-info {
+            width: 300px;
+            background-color: rgba(13, 21, 37, 0.8);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2a3b5c;
+        }
+        
+        .score-container {
+            background: linear-gradient(135deg, #2a3b5c, #1a2a42);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 1px solid #3a5b8c;
+        }
+        
+        .score-title {
+            font-size: 1.2rem;
+            color: #8bb9fe;
+            margin-bottom: 10px;
+        }
+        
+        #score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #FFC107;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .controls {
+            margin-bottom: 25px;
+        }
+        
+        .controls h2, .instructions h2 {
+            font-size: 1.4rem;
+            color: #4CAF50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #2a3b5c;
+        }
+        
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        
+        .key {
+            display: inline-block;
+            background-color: #2a3b5c;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #FFC107;
+            border: 1px solid #3a5b8c;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            color: #ccc;
+        }
+        
+        .game-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #startBtn {
+            background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+            color: white;
+        }
+        
+        #startBtn:hover {
+            background: linear-gradient(to bottom, #66BB6A, #388E3C);
+            transform: translateY(-3px);
+        }
+        
+        #resetBtn {
+            background: linear-gradient(to bottom, #FF5722, #D84315);
+            color: white;
+        }
+        
+        #resetBtn:hover {
+            background: linear-gradient(to bottom, #FF7043, #E64A19);
+            transform: translateY(-3px);
+        }
+        
+        .next-block {
+            background-color: rgba(13, 21, 37, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid #2a3b5c;
+        }
+        
+        .next-title {
+            font-size: 1.2rem;
+            color: #8bb9fe;
+            margin-bottom: 10px;
+        }
+        
+        #nextBlock {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-status {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #FFC107;
+            display: none;
+        }
+        
+        .color-legend {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+            width: 100%;
+            max-width: 800px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        @media (max-width: 1024px) {
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .game-board {
+                width: 90%;
+                height: 500px;
+            }
+            
+            .game-info {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>BLOCK BLAST</h1>
+        <p class="subtitle">發射彩色方塊，匹配3個或更多相同顏色方塊來消除它們！</p>
+    </div>
+    
+    <div class="game-container">
+        <div class="game-board">
+            <canvas id="gameCanvas" width="600" height="700"></canvas>
+        </div>
+        
+        <div class="game-info">
+            <div class="score-container">
+                <div class="score-title">當前分數</div>
+                <div id="score">0</div>
+            </div>
+            
+            <div class="controls">
+                <h2>遊戲控制</h2>
+                <div class="control-item">
+                    <span>移動發射器</span>
+                    <span><span class="key">←</span> <span class="key">→</span></span>
+                </div>
+                <div class="control-item">
+                    <span>發射方塊</span>
+                    <span><span class="key">空格</span> 或 <span class="key">↑</span></span>
+                </div>
+                <div class="control-item">
+                    <span>旋轉方向</span>
+                    <span><span class="key">R</span> 鍵</span>
+                </div>
+                <div class="control-item">
+                    <span>重新開始</span>
+                    <span><span class="key">ESC</span></span>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h2>遊戲規則</h2>
+                <ul>
+                    <li>使用方向鍵移動發射器，發射彩色方塊</li>
+                    <li>匹配3個或更多相同顏色的方塊來消除它們</li>
+                    <li>每次消除獲得分數：3個方塊 = 100分，每多一個方塊加50分</li>
+                    <li>連續消除可以獲得額外獎勵分數</li>
+                    <li>當方塊堆積超過警戒線時，遊戲結束</li>
+                </ul>
+            </div>
+            
+            <div class="next-block">
+                <div class="next-title">下一個方塊</div>
+                <div id="nextBlock"></div>
+            </div>
+            
+            <div class="game-status" id="gameStatus"></div>
+            
+            <div class="game-buttons">
+                <button id="startBtn">開始遊戲</button>
+                <button id="resetBtn">重新開始</button>
+            </div>
+            
+            <div class="color-legend">
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #FF5722;"></div>
+                    <span>紅色方塊</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #4CAF50;"></div>
+                    <span>綠色方塊</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #2196F3;"></div>
+                    <span>藍色方塊</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-box" style="background-color: #FFC107;"></div>
+                    <span>黃色方塊</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Block Blast 遊戲 - 使用 HTML5 Canvas 和 JavaScript 製作 | 使用方向鍵控制，匹配3個或更多相同顏色方塊</p>
+    </div>
+
+    <script>
+        // 遊戲變數
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const nextBlockElement = document.getElementById('nextBlock');
+        const gameStatusElement = document.getElementById('gameStatus');
+        const startBtn = document.getElementById('startBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // 遊戲參數
+        const gridWidth = 10;
+        const gridHeight = 13;
+        const blockSize = 40;
+        const gridOffsetX = (canvas.width - gridWidth * blockSize) / 2;
+        const gridOffsetY = 50;
+        const warningLine = 10; // 警戒線，超過此線遊戲結束
+        
+        // 方塊顏色
+        const colors = [
+            '#FF5722', // 紅色
+            '#4CAF50', // 綠色
+            '#2196F3', // 藍色
+            '#FFC107', // 黃色
+            '#9C27B0'  // 紫色
+        ];
+        
+        // 遊戲狀態
+        let grid = [];
+        let currentBlock = null;
+        let nextBlockColor = null;
+        let score = 0;
+        let gameActive = false;
+        let gameOver = false;
+        let comboCount = 0;
+        let lastComboTime = 0;
+        
+        // 發射器
+        const shooter = {
+            x: gridWidth / 2,
+            y: gridHeight,
+            width: blockSize * 1.5,
+            height: blockSize,
+            angle: 90, // 角度，90度為垂直向上
+            color: '#FFFFFF'
+        };
+        
+        // 初始化遊戲網格
+        function initGrid() {
+            grid = [];
+            for (let y = 0; y < gridHeight; y++) {
+                grid[y] = [];
+                for (let x = 0; x < gridWidth; x++) {
+                    grid[y][x] = null;
+                }
+            }
+            
+            // 添加一些初始方塊
+            for (let i = 0; i < 5; i++) {
+                const x = Math.floor(Math.random() * gridWidth);
+                const y = Math.floor(Math.random() * 5) + 5;
+                const colorIndex = Math.floor(Math.random() * colors.length);
+                grid[y][x] = colorIndex;
+            }
+        }
+        
+        // 創建新方塊
+        function createNewBlock() {
+            // 如果沒有下一個方塊，創建一個
+            if (nextBlockColor === null) {
+                nextBlockColor = Math.floor(Math.random() * colors.length);
+            }
+            
+            currentBlock = {
+                x: shooter.x,
+                y: shooter.y,
+                color: nextBlockColor,
+                moving: true,
+                speed: 8,
+                angle: shooter.angle
+            };
+            
+            // 生成下一個方塊
+            nextBlockColor = Math.floor(Math.random() * colors.length);
+            updateNextBlockDisplay();
+        }
+        
+        // 更新下一個方塊顯示
+        function updateNextBlockDisplay() {
+            nextBlockElement.style.backgroundColor = colors[nextBlockColor];
+        }
+        
+        // 繪製遊戲
+        function drawGame() {
+            // 清除畫布
+            ctx.fillStyle = '#0d1525';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 繪製網格背景
+            ctx.fillStyle = '#1a2a42';
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    ctx.fillRect(
+                        gridOffsetX + x * blockSize,
+                        gridOffsetY + y * blockSize,
+                        blockSize,
+                        blockSize
+                    );
+                    
+                    // 繪製網格線
+                    ctx.strokeStyle = '#2a3b5c';
+                    ctx.strokeRect(
+                        gridOffsetX + x * blockSize,
+                        gridOffsetY + y * blockSize,
+                        blockSize,
+                        blockSize
+                    );
+                }
+            }
+            
+            // 繪製警告線
+            ctx.strokeStyle = '#FF5722';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(gridOffsetX, gridOffsetY + warningLine * blockSize);
+            ctx.lineTo(gridOffsetX + gridWidth * blockSize, gridOffsetY + warningLine * blockSize);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 繪製網格中的方塊
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    if (grid[y][x] !== null) {
+                        drawBlock(x, y, grid[y][x]);
+                    }
+                }
+            }
+            
+            // 繪製當前移動的方塊
+            if (currentBlock && currentBlock.moving) {
+                drawBlock(currentBlock.x, currentBlock.y, currentBlock.color);
+            }
+            
+            // 繪製發射器
+            drawShooter();
+            
+            // 繪製分數和遊戲狀態
+            drawUI();
+        }
+        
+        // 繪製單個方塊
+        function drawBlock(gridX, gridY, colorIndex) {
+            const x = gridOffsetX + gridX * blockSize;
+            const y = gridOffsetY + gridY * blockSize;
+            
+            // 方塊主體
+            ctx.fillStyle = colors[colorIndex];
+            ctx.fillRect(x, y, blockSize, blockSize);
+            
+            // 方塊邊框
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, blockSize, blockSize);
+            
+            // 方塊高光效果
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillRect(x + 5, y + 5, blockSize - 10, 10);
+        }
+        
+        // 繪製發射器
+        function drawShooter() {
+            const x = gridOffsetX + shooter.x * blockSize - shooter.width / 2 + blockSize / 2;
+            const y = gridOffsetY + shooter.y * blockSize;
+            
+            // 繪製發射器底座
+            ctx.fillStyle = shooter.color;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - shooter.width / 2, y + shooter.height);
+            ctx.lineTo(x + shooter.width / 2, y + shooter.height);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 繪製發射方向指示器
+            const angleInRadians = (shooter.angle - 90) * Math.PI / 180;
+            const lineLength = 60;
+            const endX = x + Math.cos(angleInRadians) * lineLength;
+            const endY = y + Math.sin(angleInRadians) * lineLength;
+            
+            ctx.strokeStyle = '#FFC107';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            
+            // 繪製方向點
+            ctx.fillStyle = '#FFC107';
+            ctx.beginPath();
+            ctx.arc(endX, endY, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // 繪製UI
+        function drawUI() {
+            // 遊戲狀態文字
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`分數: ${score}`, 20, 30);
+            
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#FF5722';
+                ctx.font = 'bold 48px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('遊戲結束!', canvas.width / 2, canvas.height / 2 - 40);
+                
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '28px Arial';
+                ctx.fillText(`最終分數: ${score}`, canvas.width / 2, canvas.height / 2 + 20);
+                
+                ctx.font = '20px Arial';
+                ctx.fillText('按「重新開始」按鈕或ESC鍵重新開始', canvas.width / 2, canvas.height / 2 + 60);
+            } else if (!gameActive) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#4CAF50';
+                ctx.font = 'bold 48px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('BLOCK BLAST', canvas.width / 2, canvas.height / 2 - 40);
+                
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '24px Arial';
+                ctx.fillText('按「開始遊戲」按鈕開始遊戲', canvas.width / 2, canvas.height / 2 + 20);
+            }
+        }
+        
+        // 更新遊戲狀態
+        function updateGame() {
+            if (!gameActive || gameOver) return;
+            
+            // 移動當前方塊
+            if (currentBlock && currentBlock.moving) {
+                // 根據角度計算移動方向
+                const angleInRadians = (currentBlock.angle - 90) * Math.PI / 180;
+                currentBlock.x += Math.cos(angleInRadians) * currentBlock.speed / 10;
+                currentBlock.y += Math.sin(angleInRadians) * currentBlock.speed / 10;
+                
+                // 檢查邊界碰撞
+                if (currentBlock.x < 0 || currentBlock.x >= gridWidth) {
+                    // 反彈
+                    currentBlock.angle = 180 - currentBlock.angle;
+                }
+                
+                // 檢查與網格方塊的碰撞
+                const gridX = Math.round(currentBlock.x);
+                const gridY = Math.round(currentBlock.y);
+                
+                if (gridY >= 0 && gridY < gridHeight && gridX >= 0 && gridX < gridWidth) {
+                    // 檢查是否碰到頂部或其他方塊
+                    if (gridY <= 0 || (grid[gridY-1] && grid[gridY-1][gridX] !== null)) {
+                        placeBlock();
+                        return;
+                    }
+                    
+                    // 檢查是否碰到左右方塊
+                    if (grid[gridY] && grid[gridY][gridX] !== null) {
+                        // 嘗試向左或向右移動
+                        if (gridX > 0 && grid[gridY][gridX-1] === null) {
+                            currentBlock.x = gridX - 1;
+                        } else if (gridX < gridWidth-1 && grid[gridY][gridX+1] === null) {
+                            currentBlock.x = gridX + 1;
+                        } else {
+                            placeBlock();
+                            return;
+                        }
+                    }
+                }
+                
+                // 檢查是否到達底部
+                if (currentBlock.y >= gridHeight) {
+                    placeBlock();
+                }
+            }
+            
+            // 檢查連續消除時間
+            const currentTime = Date.now();
+            if (currentTime - lastComboTime > 2000) { // 2秒內沒有新的消除，重置連擊
+                comboCount = 0;
+            }
+        }
+        
+        // 放置方塊到網格
+        function placeBlock() {
+            if (!currentBlock || !currentBlock.moving) return;
+            
+            const gridX = Math.round(currentBlock.x);
+            const gridY = Math.round(currentBlock.y);
+            
+            // 確保方塊在網格範圍內
+            if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+                grid[gridY][gridX] = currentBlock.color;
+                currentBlock.moving = false;
+                
+                // 檢查匹配
+                checkMatches(gridX, gridY);
+                
+                // 創建新方塊
+                createNewBlock();
+                
+                // 檢查遊戲結束
+                checkGameOver();
+            } else {
+                // 如果方塊超出範圍，重新發射
+                currentBlock.x = shooter.x;
+                currentBlock.y = shooter.y;
+                currentBlock.angle = shooter.angle;
+            }
+        }
+        
+        // 檢查匹配
+        function checkMatches(startX, startY) {
+            const color = grid[startY][startX];
+            if (color === null) return;
+            
+            // 檢查水平匹配
+            let horizontalMatches = [startX];
+            // 向左檢查
+            for (let x = startX - 1; x >= 0; x--) {
+                if (grid[startY][x] === color) {
+                    horizontalMatches.push(x);
+                } else {
+                    break;
+                }
+            }
+            // 向右檢查
+            for (let x = startX + 1; x < gridWidth; x++) {
+                if (grid[startY][x] === color) {
+                    horizontalMatches.push(x);
+                } else {
+                    break;
+                }
+            }
+            
+            // 檢查垂直匹配
+            let verticalMatches = [startY];
+            // 向上檢查
+            for (let y = startY - 1; y >= 0; y--) {
+                if (grid[y][startX] === color) {
+                    verticalMatches.push(y);
+                } else {
+                    break;
+                }
+            }
+            // 向下檢查
+            for (let y = startY + 1; y < gridHeight; y++) {
+                if (grid[y][startX] === color) {
+                    verticalMatches.push(y);
+                } else {
+                    break;
+                }
+            }
+            
+            let matchedBlocks = [];
+            
+            // 如果有水平匹配（3個或以上）
+            if (horizontalMatches.length >= 3) {
+                for (const x of horizontalMatches) {
+                    matchedBlocks.push({x, y: startY});
+                }
+            }
+            
+            // 如果有垂直匹配（3個或以上）
+            if (verticalMatches.length >= 3) {
+                for (const y of verticalMatches) {
+                    matchedBlocks.push({x: startX, y});
+                }
+            }
+            
+            // 移除重複的方塊
+            const uniqueBlocks = [];
+            const blockMap = new Map();
+            
+            for (const block of matchedBlocks) {
+                const key = `${block.x},${block.y}`;
+                if (!blockMap.has(key)) {
+                    blockMap.set(key, true);
+                    uniqueBlocks.push(block);
+                }
+            }
+            
+            // 如果有匹配的方塊，消除它們
+            if (uniqueBlocks.length >= 3) {
+                // 增加連擊
+                comboCount++;
+                lastComboTime = Date.now();
+                
+                // 計算分數
+                const baseScore = 100;
+                const extraScore = (uniqueBlocks.length - 3) * 50;
+                const comboBonus = comboCount > 1 ? comboCount * 20 : 0;
+                const totalScore = baseScore + extraScore + comboBonus;
+                
+                score += totalScore;
+                scoreElement.textContent = score;
+                
+                // 顯示得分動畫
+                showGameStatus(`消除 ${uniqueBlocks.length} 個方塊！ +${totalScore} 分${comboCount > 1 ? ` (連擊 x${comboCount})` : ''}`);
+                
+                // 消除方塊
+                for (const block of uniqueBlocks) {
+                    grid[block.y][block.x] = null;
+                }
+                
+                // 讓上方方塊下落
+                applyGravity();
+                
+                // 遞歸檢查是否有新的匹配產生
+                setTimeout(() => {
+                    for (const block of uniqueBlocks) {
+                        // 檢查周圍方塊
+                        for (let dx = -1; dx <= 1; dx++) {
+                            for (let dy = -1; dy <= 1; dy++) {
+                                if (dx === 0 && dy === 0) continue;
+                                
+                                const x = block.x + dx;
+                                const y = block.y + dy;
+                                
+                                if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+                                    if (grid[y][x] !== null) {
+                                        checkMatches(x, y);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }, 100);
+            } else {
+                // 沒有匹配，重置連擊
+                comboCount = 0;
+            }
+        }
+        
+        // 應用重力，讓懸空的方塊下落
+        function applyGravity() {
+            for (let x = 0; x < gridWidth; x++) {
+                for (let y = gridHeight - 1; y >= 0; y--) {
+                    if (grid[y][x] !== null) {
+                        let newY = y;
+                        while (newY + 1 < gridHeight && grid[newY + 1][x] === null) {
+                            newY++;
+                        }
+                        
+                        if (newY !== y) {
+                            grid[newY][x] = grid[y][x];
+                            grid[y][x] = null;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 檢查遊戲是否結束
+        function checkGameOver() {
+            for (let x = 0; x < gridWidth; x++) {
+                if (grid[warningLine][x] !== null) {
+                    gameOver = true;
+                    gameStatusElement.textContent = "遊戲結束！方塊超過警戒線！";
+                    gameStatusElement.style.display = "block";
+                    gameStatusElement.style.backgroundColor = "rgba(255, 87, 34, 0.2)";
+                    gameStatusElement.style.color = "#FF5722";
+                    return;
+                }
+            }
+        }
+        
+        // 顯示遊戲狀態消息
+        function showGameStatus(message) {
+            gameStatusElement.textContent = message;
+            gameStatusElement.style.display = "block";
+            gameStatusElement.style.backgroundColor = "rgba(76, 175, 80, 0.2)";
+            gameStatusElement.style.color = "#4CAF50";
+            
+            setTimeout(() => {
+                gameStatusElement.style.display = "none";
+            }, 2000);
+        }
+        
+        // 遊戲循環
+        function gameLoop() {
+            updateGame();
+            drawGame();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // 初始化遊戲
+        function initGame() {
+            initGrid();
+            score = 0;
+            scoreElement.textContent = score;
+            gameOver = false;
+            gameActive = false;
+            comboCount = 0;
+            nextBlockColor = null;
+            createNewBlock();
+            gameStatusElement.style.display = "none";
+        }
+        
+        // 開始遊戲
+        function startGame() {
+            if (gameOver) {
+                initGame();
+            }
+            gameActive = true;
+            gameStatusElement.textContent = "遊戲開始！";
+            gameStatusElement.style.display = "block";
+            gameStatusElement.style.backgroundColor = "rgba(33, 150, 243, 0.2)";
+            gameStatusElement.style.color = "#2196F3";
+            
+            setTimeout(() => {
+                gameStatusElement.style.display = "none";
+            }, 1500);
+        }
+        
+        // 發射方塊
+        function shootBlock() {
+            if (!gameActive || gameOver || !currentBlock || !currentBlock.moving) return;
+            
+            currentBlock.angle = shooter.angle;
+            currentBlock.moving = true;
+        }
+        
+        // 鍵盤控制
+        document.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    shooter.x = Math.max(0, shooter.x - 1);
+                    if (currentBlock && !currentBlock.moving) {
+                        currentBlock.x = shooter.x;
+                    }
+                    break;
+                case 'ArrowRight':
+                    shooter.x = Math.min(gridWidth - 1, shooter.x + 1);
+                    if (currentBlock && !currentBlock.moving) {
+                        currentBlock.x = shooter.x;
+                    }
+                    break;
+                case 'ArrowUp':
+                case ' ':
+                    shootBlock();
+                    break;
+                case 'r':
+                case 'R':
+                    // 旋轉發射角度
+                    shooter.angle += 30;
+                    if (shooter.angle > 150) shooter.angle = 30;
+                    break;
+                case 'Escape':
+                    initGame();
+                    break;
+            }
+        });
+        
+        // 按鈕事件監聽
+        startBtn.addEventListener('click', () => {
+            if (!gameActive) {
+                startGame();
+            }
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            initGame();
+            startGame();
+        });
+        
+        // 初始化遊戲
+        initGame();
+        
+        // 開始遊戲循環
+        gameLoop();
+    </script>
+</body>
+</html>
