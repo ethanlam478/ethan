@@ -254,13 +254,24 @@
             left: 0;
             width: 100%;
             text-align: center;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.5rem;
+            color: #ffcc00;
+            font-size: 1.8rem;
+            font-weight: bold;
             transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 25px;
             z-index: 50;
             display: none;
+            border-radius: 10px;
+            border: 3px solid #ff9900;
+            text-shadow: 2px 2px 0 #000;
+            animation: hintPulse 1.5s infinite;
+        }
+        
+        @keyframes hintPulse {
+            0% { opacity: 0.9; transform: translateY(-50%) scale(1); }
+            50% { opacity: 1; transform: translateY(-50%) scale(1.05); }
+            100% { opacity: 0.9; transform: translateY(-50%) scale(1); }
         }
 
         /* 页脚 */
@@ -387,17 +398,17 @@
                 this.highScoreDisplay = document.getElementById('highScoreDisplay');
                 this.finalHighScoreDisplay = document.getElementById('finalHighScore');
                 
-                // 游戏参数
-                this.gravity = 0.5;
-                this.jumpForce = -10;
-                this.pipeSpeed = 2;
-                this.pipeGap = 120;
-                this.pipeFrequency = 90; // 帧数
+                // 游戏参数 (调整得更简单)
+                this.gravity = 0.3;
+                this.jumpForce = -12;
+                this.pipeSpeed = 1.5;
+                this.pipeGap = 150;
+                this.pipeFrequency = 120; // 帧数
                 this.groundY = this.canvas.height - 80;
                 
-                // 难度曲线
-                this.basePipeSpeed = 2;
-                this.speedIncreasePerScore = 0.05;
+                // 难度曲线 (调整得更平缓)
+                this.basePipeSpeed = 1.5;
+                this.speedIncreasePerScore = 0.02;
                 
                 // 游戏对象
                 this.bird = null;
@@ -547,6 +558,9 @@
             update() {
                 if (this.gameState !== 'playing') return;
                 
+                // 更新背景
+                this.background.update();
+                
                 // 更新小鸟
                 this.bird.update();
                 
@@ -656,7 +670,7 @@
             }
             
             reset() {
-                this.y = this.game.canvas.height / 2 - this.height / 2;
+                this.y = this.game.canvas.height / 3 - this.height / 2; // 起始位置更高
                 this.velocity = 0;
                 this.rotation = 0;
             }
@@ -806,6 +820,21 @@
                 ctx.fillRect(this.x + 35, 0, 5, this.gapY);
                 ctx.fillRect(this.x + 10, bottomPipeY, 5, bottomPipeHeight);
                 ctx.fillRect(this.x + 35, bottomPipeY, 5, bottomPipeHeight);
+                
+                // 绘制缺口视觉引导（让玩家更容易看到缺口）
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.fillRect(this.x, this.gapY - 2, this.width, 2);
+                ctx.fillRect(this.x, this.gapY + this.gapHeight, this.width, 2);
+                
+                // 缺口中间的引导箭头
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.6)';
+                const gapCenterY = this.gapY + this.gapHeight / 2;
+                ctx.beginPath();
+                ctx.moveTo(this.x + this.width / 2 - 5, gapCenterY - 5);
+                ctx.lineTo(this.x + this.width / 2 + 5, gapCenterY);
+                ctx.lineTo(this.x + this.width / 2 - 5, gapCenterY + 5);
+                ctx.closePath();
+                ctx.fill();
             }
         }
 
